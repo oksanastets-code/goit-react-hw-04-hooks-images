@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { ImSearch } from 'react-icons/im';
 import PropTypes from 'prop-types';
@@ -10,46 +10,42 @@ import {
   SearchFormInput,
 } from './Searchbar.styled';
 
-export default class Searchbar extends Component {
-  state = {
-    keyWord: '',
-  };
-  handleSubmit = e => {
+export default function Searchbar({ onSubmit }) {
+  const [keyWord, setKeyWord] = useState('');
+
+  const handleSubmit = e => {
     e.preventDefault();
 
-    if (this.state.keyWord.trim() === '') {
+    if (keyWord.trim() === '') {
       const notify = 'Please, enter keyword for searching.';
       toast.error(notify);
       return;
     }
-    this.props.onSubmit(this.state.keyWord);
-    this.setState({ keyWord: '' });
+    onSubmit(keyWord);
+    setKeyWord('');
     e.currentTarget.reset();
   };
-  handleKeyWordChange = e => {
-    this.setState({ keyWord: e.currentTarget.value.toLowerCase() });
+  const handleKeyWordChange = e => {
+    setKeyWord(e.currentTarget.value.toLowerCase());
   };
+  return (
+    <SearchBar>
+      <SearchForm onSubmit={handleSubmit}>
+        <SearchFormButton type="submit">
+          <ImSearch />
+          <SearchFormButtonLabel>Search</SearchFormButtonLabel>
+        </SearchFormButton>
 
-  render() {
-    return (
-      <SearchBar>
-        <SearchForm onSubmit={this.handleSubmit}>
-          <SearchFormButton type="submit">
-            <ImSearch />
-            <SearchFormButtonLabel>Search</SearchFormButtonLabel>
-          </SearchFormButton>
-
-          <SearchFormInput
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            onChange={this.handleKeyWordChange}
-          />
-        </SearchForm>
-      </SearchBar>
-    );
-  }
+        <SearchFormInput
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          onChange={handleKeyWordChange}
+        />
+      </SearchForm>
+    </SearchBar>
+  );
 }
 Searchbar.propTypes = {
   onSubmit: PropTypes.func,
