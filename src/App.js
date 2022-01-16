@@ -20,33 +20,56 @@ export default function App() {
   const [error, setError] = useState(null);
   const [showLoadMoreBtn, setShowLoadMoreBtn] = useState(false);
 
-  // fetchImages(searchWord, page)
-  // .then(data => {
-  //   if (data.hits.length === 0) {
-  //     const notify = 'Wrong request - nothing found. Please, try again.';
-  //     toast.error(notify);
-  //     setShowLoadMoreBtn(false);
-  //     // this.setState({ showLoadMoreBtn: false });
-  //     return;
-  //   }
+  useEffect(() => {
+    setImages([]);
+  }, []);
 
-  //   console.log(data.hits);
-  //   setImages(prevImages => page === 1 ? data.hits : [...prevImages, ...data.hits]);
-  //   setShowLoadMoreBtn(true);
+  useEffect(() => {
+    setImages([]);
+    setPage(1);
+  }, [searchWord]);
+  //  componentDidUpdate(prevProps, prevState) {
+  //     if (prevProps.searchWord !== this.state.searchWord) {
+  //       this.setState({
+  //         images: [],
+  //         page: 1,
+  //       });
+  //     }
+  //     if (prevProps.searchWord !== this.state.searchWord || prevState.page !== this.state.page) {
+  //       this.setState({
+  //         loading: this.state.page === 1 ? true : false,
+  //         showLoadMoreBtn: false,
+  //       });
+  // console.log(this.state.searchWord);
 
-  //   if (data.hits.length < 12) {
-  //     setShowLoadMoreBtn(false);
+  useEffect(() => {
+    console.log(searchWord);
+    console.log(page);
+    setLoading(true);
+    fetchImages(searchWord, page)
+      .then(data => {
+        if (data.hits.length === 0) {
+          const notify = 'Wrong request - nothing found. Please, try again.';
+          toast.error(notify);
+          setShowLoadMoreBtn(false);
+          return;
+        }
+        console.log(data.hits);
+        setImages(prevImages => (page === 1 ? data.hits : [...prevImages, ...data.hits]));
+        setShowLoadMoreBtn(true);
 
-  //   }
-  //   return;
-  // })
-  // .catch(error => setError(error))
-  // .finally(() => setLoading(false))
+        if (data.hits.length < 12) {
+          setShowLoadMoreBtn(false);
+        }
+        return;
+      })
+      .catch(error => setError(error))
+      .finally(() => setLoading(false));
+  }, [page, searchWord]);
 
   const onLoadMoreClick = () => {
     setPage(prevPage => prevPage + 1);
   };
-  // end
 
   const handleFormSubmit = keyWord => {
     setSearchWord(keyWord);
@@ -65,7 +88,6 @@ export default function App() {
     <Div>
       <Toaster />
       <Searchbar onSubmit={handleFormSubmit} />
-      {/* <LoadingDots /> */}
       {loading && <LoadingDots />}
       {images && <ImageGallery searchKey={searchWord} onOpen={onOpenLargeImage} images={images} />}
       {showLoadMoreBtn && <Button onClick={onLoadMoreClick} />}
@@ -77,41 +99,3 @@ export default function App() {
     </Div>
   );
 }
-
-// start
-//   componentDidUpdate(prevProps, prevState) {
-//     if (prevProps.searchWord !== this.state.searchWord) {
-//       this.setState({
-//         images: [],
-//         page: 1,
-//       });
-//     }
-//     if (prevProps.searchWord !== this.state.searchWord || prevState.page !== this.state.page) {
-//       this.setState({
-//         loading: this.state.page === 1 ? true : false,
-//         showLoadMoreBtn: false,
-//       });
-// console.log(this.state.searchWord);
-//       fetchImages(searchWord, page)
-//         .then(data => {
-//           if (data.hits.length === 0) {
-//             const notify = 'Wrong request - nothing found. Please, try again.';
-//             toast.error(notify);
-//             this.setState({ showLoadMoreBtn: false });
-//             return;
-//           }
-
-//           console.log(data.hits);
-//           this.setState({
-//             images: this.state.page === 1 ? data.hits : [...prevState.images, ...data.hits],
-//             showLoadMoreBtn: true,
-//           });
-//           if (data.hits.length < 12) {
-//             this.setState({ showLoadMoreBtn: false });
-//           }
-//           return;
-//         })
-//         .catch(error => this.setState({ error }))
-//         .finally(() => this.setState({ loading: false }));
-//     }
-//   }
