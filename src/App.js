@@ -22,30 +22,15 @@ export default function App() {
 
   useEffect(() => {
     setImages([]);
-  }, []);
-
-  useEffect(() => {
-    setImages([]);
     setPage(1);
   }, [searchWord]);
-  //  componentDidUpdate(prevProps, prevState) {
-  //     if (prevProps.searchWord !== this.state.searchWord) {
-  //       this.setState({
-  //         images: [],
-  //         page: 1,
-  //       });
-  //     }
-  //     if (prevProps.searchWord !== this.state.searchWord || prevState.page !== this.state.page) {
-  //       this.setState({
-  //         loading: this.state.page === 1 ? true : false,
-  //         showLoadMoreBtn: false,
-  //       });
-  // console.log(this.state.searchWord);
 
   useEffect(() => {
-    console.log(searchWord);
-    console.log(page);
-    setLoading(true);
+    if (searchWord === '') {
+      return;
+    }
+
+    setLoading(page === 1 ? true : false);
     fetchImages(searchWord, page)
       .then(data => {
         if (data.hits.length === 0) {
@@ -68,14 +53,14 @@ export default function App() {
   }, [page, searchWord]);
 
   const onLoadMoreClick = () => {
-    setPage(prevPage => prevPage + 1);
+    setPage(page => page + 1);
   };
 
   const handleFormSubmit = keyWord => {
     setSearchWord(keyWord);
   };
   const toggleModal = () => {
-    setShowModal(prevShowModal => !prevShowModal);
+    setShowModal(showModal => !showModal);
   };
 
   const onOpenLargeImage = (selectedImage, selectedAlt) => {
