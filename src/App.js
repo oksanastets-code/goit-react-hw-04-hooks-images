@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { toast, Toaster } from 'react-hot-toast';
 import { Div } from './App.styled';
 import Searchbar from './components/Searchbar/Searchbar';
@@ -20,15 +20,23 @@ export default function App() {
   const [error, setError] = useState(null);
   const [showLoadMoreBtn, setShowLoadMoreBtn] = useState(false);
 
+  const isFirstRender = useRef(true);
+
   useEffect(() => {
     setImages([]);
     setPage(1);
   }, [searchWord]);
 
   useEffect(() => {
-    if (searchWord === '') {
+    // don't fetch by first render
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
       return;
     }
+    // possible option by http
+    // if (searchWord === '') {
+    //   return;
+    // }
 
     setLoading(page === 1 ? true : false);
     fetchImages(searchWord, page)
